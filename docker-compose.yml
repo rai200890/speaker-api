@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  app:
+    build:
+      args:
+        - MIX_ENV=dev
+      context: .
+    command: mix do ecto.migrate, phx.server --no-halt
+    env_file: .env
+    volumes:
+      - .:/app
+      - /app/deps
+      - /app/_build
+    depends_on:
+      - db
+    ports:
+      - $PORT:$PORT
+  db:
+    image: postgres:11.2-alpine
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=speaker_db
+      - POSTGRES_USER=user
+      -  POSTGRES_PASSWORD=pass 

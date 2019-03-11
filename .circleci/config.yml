@@ -1,0 +1,34 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: elixir:1.8.1
+        name: app
+        environment:
+          - PORT=3000
+          - DATABASE_URL=postgres://user:pass@db:5432/speaker_db_test
+      - image: postgres:11.2
+        name: db
+        environment:
+          - POSTGRES_USER=user
+          - POSTGRES_PASSWORD=pass
+          - POSTGRES_DB=speaker_db_test
+    steps:
+      - checkout
+      - run: apt install ca-certificates git
+      - run: mix do local.hex --force, local.rebar --force
+      - run: mix do deps.get, deps.clean --unused, compile --warnings-as-errors
+      - run: mix do ecto.create, ecto.migrate
+      - run: mix coveralls.html
+      - store_artifacts:
+          path: cover
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              only: /.*/
