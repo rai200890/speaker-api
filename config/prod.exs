@@ -17,6 +17,13 @@ config :speaker, SpeakerWeb.Endpoint,
 # Do not print debug messages in production
 config :logger, level: :info
 
+config :speaker, SpeakerWeb.Endpoint,
+  secret_key_base: System.get_env("SECRET_KEY")
+
+config :speaker, Speaker.Repo,
+  pool_size: 10,
+  url: System.get_env("DATABASE_URL")
+
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key
@@ -68,4 +75,4 @@ config :logger, level: :info
 
 # Finally import the config/prod.secret.exs which should be versioned
 # separately.
-import_config "prod.secret.exs"
+# import_config "prod.secret.exs"
